@@ -1,6 +1,13 @@
 # Bird challenge: from BirdNET predictions to observations
 
-## Summary
+**Contents**
+- [Bird challenge 1: observation labels for each prediction](#bird-challenge-1-observation-labels-for-each-prediction)
+  - [Summary](#summary) · [Data](#data) · [Method](#method) · [Results and decisions](#results-and-decisions)
+- [Bird challenge 2: hand-off to the Tech team](#bird-challenge-2-hand-off-to-the-tech-team)
+
+## Bird challenge 1: observation labels for each prediction
+
+### Summary
 - Following Wood & Kahl (2024), I fitted a logistic regression per species relating BirdNET's
   (logit-transformed) confidence score to whether an ornithologist judged the prediction correct,
   and set the threshold where the fitted probability of a correct prediction reaches **0.99**.
@@ -16,7 +23,7 @@ Outputs: `data/processed/birdnet_observations.csv` (all 29,491 predictions with 
 field) and `data/processed/species_thresholds.csv` (one row per species: fit, threshold and status).
 Analysis: `bird-data-investigation.ipynb`.
 
-## Data
+### Data
 | Species | Predictions | Validated | Correct | Incorrect |
 |---|---|---|---|---|
 | Abyssinian Nightjar | 10,187 | 150 | 117 | 33 |
@@ -30,7 +37,7 @@ over-represent high scores (see the score-distribution plot in the notebook). Sp
 suits curve fitting, but it means relatively few validated clips sit where most predictions,
 and most errors, are likely to be.
 
-## Method
+### Method
 1. **Transform the score.** `logit(confidence)`, with scores of 1.0 clipped to 1 − 1e-6 to avoid
    infinite values.
 2. **Fit per species.** Binomial GLM `outcome ~ logit_score`.
@@ -46,7 +53,7 @@ The notebook plots the first-pass fits for all species, before the reliability c
 Plover's threshold appears there but is rejected (see below). A final plot shows thresholds only where
 they passed the checks.
 
-## Results and decisions
+### Results and decisions
 | Species | Slope (95% CI) | Fitted threshold | Status | Observations |
 |---|---|---|---|---|
 | Abyssinian Nightjar | 2.07 (1.10 to 3.04) | 0.667 | Usable | 3,147 |
@@ -74,7 +81,7 @@ and that is where errors are most likely. With enough incorrect clips, a reliabl
   scores to validate: 101 of 235 predictions are already validated, and only one scores 0.9 or more.
   A reliable 99% threshold is unlikely to be achievable.
 
-## Hand-off to the Tech team (Q2)
+## Bird challenge 2: hand-off to the Tech team
 **How it runs.** Two jobs after BirdNET predictions are stored:
 1. **Fit thresholds**: run per species (and BirdNET version) whenever validations change.
    Writes a `species_thresholds` table.
